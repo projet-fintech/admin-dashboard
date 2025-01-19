@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8083/users'; // API FOR USERS (CLIENTS/EMPLOYEES) CRUDS
-const API_URL3 = 'http://localhost:8082/api'; // API FOR LOAN MANAGEMENT 
-const API_URL2 = 'http://localhost:8085/accounts' // API FOR CLIENTS ACCOUNTS MANAGEMENT
-const API_URL4 = 'http://localhost:8084/api' // API FOR TRANSACTIONS MANAGEMENT (DEPOSIT/SEND/TRANSACTIONS)
+const API_URL = import.meta.env.API_URL; // API FOR USERS (CLIENTS/EMPLOYEES) CRUDS
+const API_URL3 = import.meta.env.API_URL3; // API FOR LOAN MANAGEMENT 
+const API_URL2 = import.meta.env.API_URL2 // API FOR CLIENTS ACCOUNTS MANAGEMENT
+const API_URL4 = import.meta.env.API_URL4// API FOR TRANSACTIONS MANAGEMENT (DEPOSIT/SEND/TRANSACTIONS)
 
 // Client CRUD functions
 export const createClient = async (clientData) => {
