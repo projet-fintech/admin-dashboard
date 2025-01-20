@@ -19,7 +19,7 @@ pipeline {
                 )
             }
         }
-        stage('Prepare Environment Variables') {
+        /*stage('Prepare Environment Variables') {
             steps {
                 script {
                    sh """
@@ -28,7 +28,7 @@ pipeline {
                    """
                 }
             }
-        }
+        }*/
          stage('Install Dependencies') {
             steps {
                 sh 'npm install'
