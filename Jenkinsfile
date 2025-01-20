@@ -79,7 +79,7 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to EKS') {
+        /*stage('Deploy to EKS') {
             steps {
                 script {
                    withCredentials([aws(credentialsId: 'aws-credentials')]) {
@@ -97,7 +97,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
         stage('Cleanup') {
             steps {
                 script {
