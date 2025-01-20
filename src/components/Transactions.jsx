@@ -24,7 +24,7 @@ import TransactionTypeDistribution from './transactiondata/TransactionTypeDistri
 import TransactionVolumeChart from './transactiondata/TransactionVolumeChart';
 import RecentTransactionsChart from './transactiondata/RecentTransactionsChart';
 import WalletBalanceChart from './WalletBalanceChart';
-import { addRetrait, addVersement, getAllOperations, getAllAccounts } from '../api';
+import { addRetrait, addVersement, getAllOperations, getAllAccounts, getAccountByNumber } from '../api';
 
 function Transactions() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -92,13 +92,31 @@ function Transactions() {
   const handleDeposit = async (e) => {
     e.preventDefault();
     try {
+      // Fetch account details using the account number
+      
+      const account = await getAccountByNumber(depositData.compteId);
+  
+  
+      if (!account) {
+        toast({
+          title: 'Account not found',
+          description: 'Please select a valid account.',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+        return;
+      }
+  
       const verifiedDeposit = {
         ...depositData,
         date: new Date().toISOString(),
         amount: parseFloat(depositData.amount),
         employe_id: 1, // Static employee ID for now
+        compteId: account.id_account, // Use account ID instead of account number
       };
-      await addVersement(verifiedDeposit);
+      console.log(verifiedDeposit);
+      addVersement(verifiedDeposit);
       toast({
         title: 'Deposit successful',
         status: 'success',
@@ -118,17 +136,33 @@ function Transactions() {
       console.error('Error adding deposit:', error);
     }
   };
-
+  
   const handleWithdraw = async (e) => {
     e.preventDefault();
     try {
+      // Fetch account details using the account number
+      const account = await getAccountByNumber(withdrawData.compteId);
+  
+      if (!account) {
+        toast({
+          title: 'Account not found',
+          description: 'Please select a valid account.',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+        return;
+      }
+  
       const verifiedWithdraw = {
         ...withdrawData,
         date: new Date().toISOString(),
         amount: parseFloat(withdrawData.amount),
         employe_id: 1, // Static employee ID for now
+        compteId: account.id_account,
       };
-      await addRetrait(verifiedWithdraw);
+      console.log(verifiedWithdraw);
+       addRetrait(verifiedWithdraw);
       toast({
         title: 'Withdrawal successful',
         status: 'success',
@@ -148,6 +182,37 @@ function Transactions() {
       console.error('Error adding withdrawal:', error);
     }
   };
+  
+
+  // const handleWithdraw = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const verifiedWithdraw = {
+  //       ...withdrawData,
+  //       date: new Date().toISOString(),
+  //       amount: parseFloat(withdrawData.amount),
+  //       employe_id: 1, // Static employee ID for now
+  //     };
+  //     await addRetrait(verifiedWithdraw);
+  //     toast({
+  //       title: 'Withdrawal successful',
+  //       status: 'success',
+  //       duration: 3000,
+  //       isClosable: true,
+  //     });
+  //     setWithdrawOpen(false);
+  //     fetchTransactions();
+  //   } catch (error) {
+  //     toast({
+  //       title: 'Withdrawal failed',
+  //       description: 'An error occurred while processing your withdrawal.',
+  //       status: 'error',
+  //       duration: 3000,
+  //       isClosable: true,
+  //     });
+  //     console.error('Error adding withdrawal:', error);
+  //   }
+  // };
 
   return (
     <Box p={8}>
