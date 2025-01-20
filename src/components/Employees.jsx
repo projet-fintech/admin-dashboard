@@ -119,8 +119,7 @@ export function Employees() {
       department: '',
       city: '',
     })
-    onClose()
-    fetchEmployees()
+    onClose();
   }
 
   const handleUpdate = async (id, updatedData) => {

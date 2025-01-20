@@ -22,10 +22,8 @@ import {
   Flex,
   useColorModeValue,
   Select,
-  FormControl,
-  FormLabel,
 } from '@chakra-ui/react';
-import { createAccount, getAllAccounts, updateAccountStatus, deleteAccount } from '../api';
+import { createAccount, getAllAccounts, updateAccountStatus, deleteAccount, getAllClients } from '../api';
 import AccountTypeDistribution from './accountsdata/AccountTypeDistribution';
 import AccountBalanceOverview from './accountsdata/AccountBalanceOverview';
 import AccountStatusChart from './accountsdata/AccountStatusChart';
@@ -33,7 +31,8 @@ import AccountGrowthChart from './accountsdata/AccountGrowthChart';
 
 function Accounts() {
   const [accounts, setAccounts] = useState([]);
-  const [newAccount, setNewAccount] = useState({ id_client: '', accountType: '', initialBalance: '' });
+  const [clients, setClients] = useState([]);
+  const [newAccount, setNewAccount] = useState({ id: '', accountType: '' });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [deleteConfirmation, setDeleteConfirmation] = useState({ isOpen: false, accountId: null });
   const bgColor = useColorModeValue("white", "gray.800");
@@ -41,27 +40,50 @@ function Accounts() {
 
   useEffect(() => {
     fetchAccounts();
+    fetchClients();
   }, []);
 
   const fetchAccounts = async () => {
-    const data = await getAllAccounts();
-    setAccounts(data);
+    try {
+      const data = await getAllAccounts();
+      setAccounts(data);
+    } catch (error) {
+      console.error('Error fetching accounts:', error);
+    }
+  };
+
+  const fetchClients = async () => {
+    try {
+      const data = await getAllClients();
+      setClients(data);
+    } catch (error) {
+      console.error('Error fetching clients:', error);
+    }
   };
 
   const handleCreate = async () => {
-    const createdAccount = await createAccount(newAccount);
-    setAccounts(prevAccounts => [...prevAccounts, createdAccount]);
-    setNewAccount({ id_client: '', accountType: '', initialBalance: '' });
-    onClose();
+    try {
+      console.log(newAccount);
+      const createdAccount = await createAccount(newAccount);
+      setAccounts(prevAccounts => [...prevAccounts, createdAccount]);
+      setNewAccount({ id_client: '', accountType: '', initialBalance: '' });
+      onClose();
+    } catch (error) {
+      console.error('Error creating account:', error);
+    }
   };
 
   const handleUpdateStatus = async (id, status) => {
-    await updateAccountStatus(id, status);
-    setAccounts(prevAccounts =>
-      prevAccounts.map(account =>
-        account.id_account === id ? { ...account, status } : account
-      )
-    );
+    try {
+      await updateAccountStatus(id, status);
+      setAccounts(prevAccounts =>
+        prevAccounts.map(account =>
+          account.id_account === id ? { ...account, status } : account
+        )
+      );
+    } catch (error) {
+      console.error('Error updating account status:', error);
+    }
   };
 
   const handleDeleteConfirmation = (id) => {
@@ -70,11 +92,15 @@ function Accounts() {
 
   const confirmDelete = async () => {
     if (deleteConfirmation.accountId) {
-      await deleteAccount(deleteConfirmation.accountId);
-      setAccounts(prevAccounts =>
-        prevAccounts.filter(account => account.id_account !== deleteConfirmation.accountId)
-      );
-      setDeleteConfirmation({ isOpen: false, accountId: null });
+      try {
+        await deleteAccount(deleteConfirmation.accountId);
+        setAccounts(prevAccounts =>
+          prevAccounts.filter(account => account.id_account !== deleteConfirmation.accountId)
+        );
+        setDeleteConfirmation({ isOpen: false, accountId: null });
+      } catch (error) {
+        console.error('Error deleting account:', error);
+      }
     }
   };
 
@@ -140,7 +166,7 @@ function Accounts() {
                     size="sm"
                     mr={2}
                   >
-                    {account.status === 'active' ? 'Deactivate' : 'Activate'}
+                    {account.status == 'active' ? 'Deactivate' : 'Activate'}
                   </Button>
                   <Button
                     onClick={() => handleDeleteConfirmation(account.id_account)}
@@ -163,16 +189,29 @@ function Accounts() {
           <ModalCloseButton />
           <ModalBody>
             <VStack spacing={4} align="stretch">
-            <Input
-                placeholder="Client ID"
+              <Select
+                placeholder="Select Client"
                 value={newAccount.id_client}
                 onChange={(e) => setNewAccount({ ...newAccount, id_client: e.target.value })}
-              />
-              <Input
-                placeholder="Account Type"
+              >
+                {clients.map(client => (
+                  <option key={client.id} value={client.id}>
+                    {client.username}
+                  </option>
+                ))}
+              </Select>
+              <Select
                 value={newAccount.accountType}
                 onChange={(e) => setNewAccount({ ...newAccount, accountType: e.target.value })}
-              />
+                placeholder="Select Account Type"
+              >
+                <option value="" disabled>
+                  Select Account Type
+                </option>
+                <option value="SILVER">SILVER</option>
+                <option value="GOLD">GOLD</option>
+                <option value="TITANIUM">TITANIUM</option>
+              </Select>
               <Button onClick={handleCreate} colorScheme="blue">
                 Create Account
               </Button>
@@ -202,4 +241,3 @@ function Accounts() {
 }
 
 export default Accounts;
-

@@ -16,56 +16,76 @@ import {
   useDisclosure,
   Input,
   VStack,
+  Select,
+  useToast,
 } from '@chakra-ui/react';
 import TransactionsTable from './transactiondata/TransactionsTable';
 import TransactionTypeDistribution from './transactiondata/TransactionTypeDistribution';
 import TransactionVolumeChart from './transactiondata/TransactionVolumeChart';
 import RecentTransactionsChart from './transactiondata/RecentTransactionsChart';
 import WalletBalanceChart from './WalletBalanceChart';
-import { addRetrait, addVersement, getAllOperations } from '../api';
+import { addRetrait, addVersement, getAllOperations, getAllAccounts } from '../api';
 
 function Transactions() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [transactions, setTransactions] = useState([]);
   const [walletBalance, setWalletBalance] = useState(0);
+  const [accounts, setAccounts] = useState([]);
   const [isDepositOpen, setDepositOpen] = useState(false);
   const [isWithdrawOpen, setWithdrawOpen] = useState(false);
-  const [depositData, setDepositData] = useState({ 
-    description: '', 
-    amount: '', 
-    employe_id: '', 
-    compteId: '' });
-  const [withdrawData, setWithdrawData] = useState({ 
-    description: '', 
+  const [depositData, setDepositData] = useState({
+    description: '',
     amount: '',
-    employe_id: '',  
-    compteId: '' });
-  const bgColor = useColorModeValue("white", "gray.800");
-  const borderColor = useColorModeValue("gray.200", "gray.700");
+    employe_id: '',
+    compteId: '',
+  });
+  const [withdrawData, setWithdrawData] = useState({
+    description: '',
+    amount: '',
+    employe_id: '',
+    compteId: '',
+  });
+  const toast = useToast();
+  const bgColor = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
 
   useEffect(() => {
     fetchTransactions();
+    fetchAccounts();
   }, []);
 
   const fetchTransactions = async () => {
-    const data = await getAllOperations();
-    setTransactions(data);
-    setWalletBalance(data.walletBalance || 0);
+    try {
+      const data = await getAllOperations();
+      setTransactions(data);
+      setWalletBalance(data.walletBalance || 0);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    }
+  };
+
+  const fetchAccounts = async () => {
+    try {
+      const data = await getAllAccounts();
+      setAccounts(data);
+    } catch (error) {
+      console.error('Error fetching accounts:', error);
+    }
   };
 
   const handleDepositChange = (e) => {
     const { name, value } = e.target;
-    setDepositData(prevState => ({
+    setDepositData((prevState) => ({
       ...prevState,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleWithdrawChange = (e) => {
     const { name, value } = e.target;
-    setWithdrawData(prevState => ({
+    setWithdrawData((prevState) => ({
       ...prevState,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -73,13 +93,11 @@ function Transactions() {
     e.preventDefault();
     try {
       const verifiedDeposit = {
-        description: depositData.description,
+        ...depositData,
         date: new Date().toISOString(),
         amount: parseFloat(depositData.amount),
-        compteId: depositData.compteId,
-        employe_id: 1, 
+        employe_id: 1, // Static employee ID for now
       };
-      console.log(verifiedDeposit);
       await addVersement(verifiedDeposit);
       toast({
         title: 'Deposit successful',
@@ -87,7 +105,8 @@ function Transactions() {
         duration: 3000,
         isClosable: true,
       });
-      onClose();
+      setDepositOpen(false);
+      fetchTransactions();
     } catch (error) {
       toast({
         title: 'Deposit failed',
@@ -100,51 +119,41 @@ function Transactions() {
     }
   };
 
-  // const handleWithdraw = async () => {
-  //   try {
-  //     await addRetrait(withdrawData);
-  //     setWithdrawData({ description: '', amount: '', compteId: '' });
-  //     setWithdrawOpen(false);
-  //     fetchTransactions();
-  //   } catch (error) {
-  //     console.error('Error adding withdrawal:', error);
-  //   }
-  // };
-
   const handleWithdraw = async (e) => {
     e.preventDefault();
     try {
       const verifiedWithdraw = {
-        description: withdrawData.description,
+        ...withdrawData,
         date: new Date().toISOString(),
         amount: parseFloat(withdrawData.amount),
-        compteId: withdrawData.compteId,
-        employe_id: 1, 
+        employe_id: 1, // Static employee ID for now
       };
-      console.log(verifiedWithdraw);
       await addRetrait(verifiedWithdraw);
       toast({
-        title: 'Withdraw successful',
+        title: 'Withdrawal successful',
         status: 'success',
         duration: 3000,
         isClosable: true,
       });
-      onClose();
+      setWithdrawOpen(false);
+      fetchTransactions();
     } catch (error) {
       toast({
-        title: 'Withdraw failed',
-        description: 'An error occurred while processing your withdraw.',
+        title: 'Withdrawal failed',
+        description: 'An error occurred while processing your withdrawal.',
         status: 'error',
         duration: 3000,
         isClosable: true,
       });
-      console.error('Error adding withdraw:', error);
+      console.error('Error adding withdrawal:', error);
     }
   };
 
   return (
     <Box p={8}>
-      <Text fontSize="3xl" fontWeight="bold" mb={6}>Transaction Dashboard</Text>
+      <Text fontSize="3xl" fontWeight="bold" mb={6}>
+        Transaction Dashboard
+      </Text>
 
       <Flex mb={4} justifyContent="flex-end" gap={4}>
         <Button colorScheme="blue" onClick={() => setDepositOpen(true)}>Add Deposit</Button>
@@ -176,6 +185,15 @@ function Transactions() {
         <TransactionsTable transactions={transactions} walletBalance={walletBalance} />
       </Box>
 
+      <Flex mb={4} justifyContent="flex-end" gap={4}>
+        <Button colorScheme="blue" onClick={() => setDepositOpen(true)}>
+          Add Deposit
+        </Button>
+        <Button colorScheme="red" onClick={() => setWithdrawOpen(true)}>
+          Add Withdrawal
+        </Button>
+      </Flex>
+
       {/* Deposit Modal */}
       <Modal isOpen={isDepositOpen} onClose={() => setDepositOpen(false)}>
         <ModalOverlay />
@@ -188,22 +206,33 @@ function Transactions() {
                 name="description"
                 placeholder="Description"
                 value={depositData.description}
-                onChange={handleDepositChange}              />
+                onChange={handleDepositChange}
+              />
               <Input
                 name="amount"
                 placeholder="Amount"
                 type="number"
                 value={depositData.amount}
-                onChange={handleDepositChange}              />
-              <Input
+                onChange={handleDepositChange}
+              />
+              <Select
                 name="compteId"
-                placeholder="Compte ID"
+                placeholder="Select Account"
                 value={depositData.compteId}
-                onChange={handleDepositChange}              />
+                onChange={handleDepositChange}
+              >
+                {accounts.map((account) => (
+                  <option key={account.id} value={account.id}>
+                    {account.accountNumber}
+                  </option>
+                ))}
+              </Select>
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" onClick={handleDeposit}>Add</Button>
+            <Button colorScheme="blue" onClick={handleDeposit}>
+              Add
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -216,26 +245,37 @@ function Transactions() {
           <ModalCloseButton />
           <ModalBody>
             <VStack spacing={4}>
-            <Input
+              <Input
                 name="description"
                 placeholder="Description"
                 value={withdrawData.description}
-                onChange={handleWithdrawChange}              />
+                onChange={handleWithdrawChange}
+              />
               <Input
                 name="amount"
                 placeholder="Amount"
                 type="number"
                 value={withdrawData.amount}
-                onChange={handleWithdrawChange}              />
-              <Input
+                onChange={handleWithdrawChange}
+              />
+              <Select
                 name="compteId"
-                placeholder="Compte ID"
+                placeholder="Select Account"
                 value={withdrawData.compteId}
-                onChange={handleWithdrawChange}              />
+                onChange={handleWithdrawChange}
+              >
+                {accounts.map((account) => (
+                  <option key={account.id} value={account.id}>
+                    {account.accountNumber}
+                  </option>
+                ))}
+              </Select>
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="red" onClick={handleWithdraw}>Add</Button>
+            <Button colorScheme="red" onClick={handleWithdraw}>
+              Add
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -244,3 +284,4 @@ function Transactions() {
 }
 
 export default Transactions;
+

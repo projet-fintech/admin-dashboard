@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChakraProvider, Box, VStack, HStack, Text, Flex, useColorModeValue } from '@chakra-ui/react';
+import { ChakraProvider, Box, VStack, HStack, Text, Flex, Image, useColorModeValue } from '@chakra-ui/react';
 import { BrowserRouter as Router, Route, Routes, NavLink } from 'react-router-dom';
 import Users from './components/Users';
 import Accounts from './components/Accounts';
@@ -18,7 +18,7 @@ function App() {
         <Flex height="100vh" direction="column" bg={bg}>
           <Box as="nav" bg={navBg} boxShadow="sm" p={4}>
             <HStack justify="space-between" align="center" maxW="1200px" mx="auto">
-              <Text fontSize="lg" fontWeight="bold" color="teal.500">Bank Admin Dashboard</Text>
+              <Text fontSize="lg" fontWeight="bold" color="teal.500">ASMAS Bank - Admin</Text>
               <HStack spacing={6}>
                 <NavLink to="/" style={{ textDecoration: 'none' }} activeClassName="active">
                   <Text fontSize="md" fontWeight="medium">Overview</Text>

@@ -33,6 +33,29 @@ import ClientNationalityDistribution from './clientdata/ClientNationalityDistrib
 import ClientStatusChart from './clientdata/ClientStatusChart'
 import ClientGrowthChart from './clientdata/ClientGrowthChart'
 
+const nationalities = [
+  'Afghan', 'Albanian', 'Algerian', 'American', 'Andorran', 'Angolan', 'Antiguan', 'Argentine',
+  'Armenian', 'Australian', 'Austrian', 'Azerbaijani', 'Bahaman', 'Bahraini', 'Bangladeshi',
+  'Barbadian', 'Belarusian', 'Belgian', 'Belizean', 'Beninese', 'Bhutanese', 'Bolivian', 'Bosnian',
+  'Botswanan', 'Brazilian', 'British', 'Bruneian', 'Bulgarian', 'Burkinabe', 'Burundian', 'Cambodian',
+  'Cameroonian', 'Canadian', 'Cape Verdean', 'Central African', 'Chadian', 'Chilean', 'Chinese', 'Colombian',
+  'Comorian', 'Congolese', 'Costa Rican', 'Croatian', 'Cuban', 'Cypriot', 'Czech', 'Danish', 'Djiboutian',
+  'Dominican', 'Ecuadorian', 'Egyptian', 'El Salvadoran', 'Equatorial Guinean', 'Eritrean', 'Estonian',
+  'Eswatini', 'Ethiopian', 'Fijian', 'Filipino', 'Finnish', 'Gabonese', 'Gambian', 'Georgian', 'German',
+  'Ghanian', 'Gibraltar', 'Greek', 'Grenadian', 'Guatemalan', 'Guinean', 'Guyanese', 'Haitian', 'Honduran',
+  'Hungarian', 'Icelander', 'Indian', 'Indonesian', 'Iranian', 'Iraqi', 'Irish', 'Israeli', 'Italian', 'Jamaican',
+  'Japanese', 'Jordanian', 'Kazakh', 'Kenyan', 'Kuwaiti', 'Kyrgyzstani', 'Laotian', 'Latvian', 'Lebanese', 'Liberian',
+  'Libyan', 'Liechtenstein', 'Lithuanian', 'Luxembourgish', 'Macedonian', 'Malagasy', 'Malawian', 'Malaysian', 'Maldivian',
+  'Malian', 'Malta', 'Marshallese', 'Mauritanian', 'Mauritian', 'Mexican', 'Moldovan', 'Monacan', 'Mongolian', 'Moroccan',
+  'Mozambican', 'Namibian', 'Nepali', 'Nicaraguan', 'Nigerian', 'North Korean', 'Northern Irish', 'Norwegian', 'Omani', 'Pakistani',
+  'Palauan', 'Panamanian', 'Papua New Guinean', 'Paraguayan', 'Peruvian', 'Philippine', 'Polish', 'Portuguese', 'Qatari',
+  'Romanian', 'Russian', 'Rwandan', 'Saint Lucian', 'Saint Vincentian', 'Samoan', 'San Marinese', 'Sao Tomean', 'Saudi Arabian',
+  'Senegalese', 'Serbian', 'Seychellois', 'Sierra Leonean', 'Singaporean', 'Slovak', 'Slovenian', 'Solomon Islands', 'Somali',
+  'South African', 'South Korean', 'Spanish', 'Sri Lankan', 'Sudanese', 'Surinamese', 'Swazi', 'Swedish', 'Swiss', 'Syrian', 'Taiwanese',
+  'Tajik', 'Tanzanian', 'Thai', 'Togolese', 'Tongan', 'Trinidadian', 'Tunisian', 'Turkish', 'Turkmen', 'Tuvaluan', 'Ugandan',
+  'Ukrainian', 'Uruguayan', 'Uzbek', 'Venezuelan', 'Vietnamese', 'Welsh', 'Yemeni', 'Zambian', 'Zimbabwean'
+];
+
 export function Clients() {
   const [clients, setClients] = useState([])
   const [newClient, setNewClient] = useState({
@@ -378,10 +401,12 @@ export function Clients() {
                 <FormLabel>Nationality</FormLabel>
                 <Select
                   value={newClient.nationality}
-                  onChange={(e) => setNewClient({ ...newClient, nationality: e.target.value })}
+                  onChange={(e) => setNewClient({...newClient, nationality: e.target.value})}
+                  placeholder="Select Nationality"
                 >
-                  <option value="Moroccan">Moroccan</option>
-                  <option value="Other">Other</option>
+                  {nationalities.map(nationality => (
+                    <option key={nationality} value={nationality}>{nationality}</option>
+                  ))}
                 </Select>
               </FormControl>
               <FormControl>

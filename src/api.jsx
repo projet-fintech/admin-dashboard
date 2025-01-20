@@ -27,6 +27,16 @@ export const getClientById = async (id) => {
   }
 };
 
+export const getClientByUsername = async (username) => {
+  try {
+    const response = await axios.get(`${API_URL}/clients/name?name=${username}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching client by username:', error);
+    throw error;
+  }
+};
+
 export const getAllClients = async () => {
   try {
     const response = await axios.get(`${API_URL}/clients`);
@@ -120,6 +130,16 @@ export const createAccount = async (accountData) => {
 export const getAccountById = async (accountId) => {
   try {
     const response = await axios.get(`${API_URL2}/${accountId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching account by ID:', error);
+    throw error;
+  }
+};
+
+export const getAccountByNumber = async (accountNumber) => {
+  try {
+    const response = await axios.get(`${API_URL2}/getacc/${accountNumber}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching account by ID:', error);
