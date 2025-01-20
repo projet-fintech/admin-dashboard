@@ -79,7 +79,7 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to EKS') {
+       /* stage('Deploy to EKS') {
             steps {
                 script {
                    withCredentials([aws(credentialsId: 'aws-credentials')]) {
@@ -90,14 +90,14 @@ pipeline {
                         """
                        // Déploiement des ressources
                         sh """
-                          kubectl apply -f k8s/config-map-admin.yaml
-                           kubectl apply -f k8s/frontend-admin-deployment.yaml
-                           kubectl apply -f k8s/frontend-admin-service.yaml
+                          kubectl apply -f kubernetes/config-map-admin.yaml
+                           kubectl apply -f kubernetes/frontend-admin-deployment.yaml
+                           kubectl apply -f kubernetes/frontend-admin-service.yaml
                         """
                     }
                 }
             }
-        }
+        }*/
         stage('Cleanup') {
             steps {
                 script {
