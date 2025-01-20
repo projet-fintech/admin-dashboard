@@ -6,7 +6,7 @@ pipeline {
     }
     environment {
         AWS_REGION = 'eu-west-3'
-        ECR_REGISTRY = '329599629502.dkr.ecr.eu-west-3.amazonaws.com'
+        ECR_REGISTRY = {ecr_registry}
         IMAGE_NAME = 'frontt'
     }
     stages {
@@ -19,7 +19,7 @@ pipeline {
                 )
             }
         }
-        /*stage('Prepare Environment Variables') {
+        stage('Prepare Environment Variables') {
             steps {
                 script {
                    sh """
@@ -28,7 +28,7 @@ pipeline {
                    """
                 }
             }
-        }*/
+        }
          stage('Install Dependencies') {
             steps {
                 sh 'npm install'
@@ -79,7 +79,7 @@ pipeline {
                 }
             }
         }
-       /* stage('Deploy to EKS') {
+       stage('Deploy to EKS') {
             steps {
                 script {
                    withCredentials([aws(credentialsId: 'aws-credentials')]) {
@@ -97,7 +97,7 @@ pipeline {
                     }
                 }
             }
-        }*/
+        }
         stage('Cleanup') {
             steps {
                 script {
