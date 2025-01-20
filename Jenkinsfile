@@ -79,24 +79,25 @@ pipeline {
                 }
             }
         }
-        /*stage('Deploy to EKS') {
+        stage('Deploy to EKS') {
             steps {
                 script {
                    withCredentials([aws(credentialsId: 'aws-credentials')]) {
                      
                       //Authentification
                         sh """
-                            aws eks update-kubeconfig --name your-eks-cluster-name --region your-aws-region
+                            aws eks update-kubeconfig --name main-eks-cluster --region ${AWS_REGION} 
                         """
                        // Déploiement des ressources
                         sh """
-                          kubectl apply -f k8s/configmap.yaml
-                           kubectl apply -f k8s/deployment.yaml
+                          kubectl apply -f k8s/config-map-admin.yaml
+                           kubectl apply -f k8s/frontend-admin-deployment.yaml
+                           kubectl apply -f k8s/frontend-admin-service.yaml
                         """
                     }
                 }
             }
-        }*/
+        }
         stage('Cleanup') {
             steps {
                 script {
