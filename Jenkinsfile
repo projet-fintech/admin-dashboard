@@ -7,7 +7,7 @@ pipeline {
     environment {
         AWS_REGION = 'eu-west-3'
         ECR_REGISTRY = '329599629502.dkr.ecr.eu-west-3.amazonaws.com'
-        IMAGE_NAME = 'frontend_admin_dashboard'
+        IMAGE_NAME = 'frontt'
     }
     stages {
         stage('Checkout') {
